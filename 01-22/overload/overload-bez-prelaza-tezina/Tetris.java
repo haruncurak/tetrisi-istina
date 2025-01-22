@@ -403,6 +403,19 @@ public class Tetris extends JPanel {
 		
 	}
 
+	private void adjustDifficultyForFlow() { 
+		if (linesClearedWithin30 >= 5) {
+			if(sleepTime >= 0){
+				if(sleepTime <= (2 * timeDec)) {
+				timeDec /= 2;
+			}
+			sleepTime -= timeDec;
+			}
+			
+		}
+	}	
+
+
 
 	
 	@Override 
