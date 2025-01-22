@@ -138,7 +138,7 @@ public class Tetris extends JPanel {
 	private void init() {
 
 
-		playerName = JOptionPane.showInputDialog("Molimo unesite vaše ime:");
+		playerName = JOptionPane.showInputDialog("Molimo unesite vašu šifru:");
 		
 			if (playerName == null || playerName.trim().isEmpty()) {
 				playerName = "Unknown";

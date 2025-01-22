@@ -138,7 +138,7 @@ public class Tetris extends JPanel {
 	private void init() {
 
 
-		playerName = JOptionPane.showInputDialog("Molimo unesite vaše ime:");
+		playerName = JOptionPane.showInputDialog("Molimo unesite Vašu šifru:");
 		
 			if (playerName == null || playerName.trim().isEmpty()) {
 				playerName = "Unknown";
@@ -405,15 +405,16 @@ public class Tetris extends JPanel {
 	}
 
 
-	private void adjustDifficultyForFlow() { 
-    	if (linesClearedWithin30 >= 5) {
-        	// Allow sleepTime to decrease but not below 10 ms
-        	sleepTime = Math.max(10, sleepTime - timeDec); 
-    		} else if (linesClearedWithin30 <= 3) {
-        	// Allow sleepTime to increase but not exceed 1000 ms
-        	sleepTime = Math.min(1000, sleepTime + timeDec);
-    		}
-	}
+	private void adjustDifficultyForFlow() {
+    if (linesClearedWithin30 >= 5) {
+        // Decrease sleepTime, but use a smaller decrement when close to the lower limit
+        int decrement = (sleepTime <= 50) ? 10 : 50; // Decrease by 10ms if sleepTime <= 50ms
+        sleepTime = Math.max(1, sleepTime - decrement);
+    } else if (linesClearedWithin30 <= 3) {
+        // Increase sleepTime by 50ms, but ensure it doesn't exceed 1000ms
+        sleepTime = Math.min(1000, sleepTime + timeDec);
+    }
+}
 
 	
 	@Override 

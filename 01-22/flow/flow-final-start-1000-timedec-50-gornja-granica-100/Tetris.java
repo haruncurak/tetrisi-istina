@@ -18,9 +18,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+//import java.io.PrintStream;
 import java.util.ArrayList;
+//import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -34,8 +37,6 @@ import javax.swing.JOptionPane;
 public class Tetris extends JPanel {
 
 	private static final long serialVersionUID = -8715353373678321308L;
-
- 
 
 	private final Point[][][] Tetraminos = {
 			// I-Piece
@@ -112,8 +113,7 @@ public class Tetris extends JPanel {
 	private ArrayList<Integer> nextPieces = new ArrayList<Integer>();
 
 	private int score;
-	private int phase = 1;
-	private int timeDec = 200;
+	private int timeDec = 50;
 	private Color[][] well;
 	private static JFrame f;
 	
@@ -123,18 +123,23 @@ public class Tetris extends JPanel {
 	private static JButton exit;
 	
 	private static BufferedReader inputFile;
+	private static FileWriter writeFile;
+	private static int lowestScore;
 	
-	private static int sleepTime = 2000;
+	private static int sleepTime = 1000;
+	int consecutiveObjects = 0; // This will increment each time a new object/tetromino spawns.
+	int linesClearedWithin30 = 0; // This will increment within the clearRows() method.
 	
 	private static String endGameString;
 	private static String playerName;
+
 	
 	// Creates a border around the well and initializes the dropping piece
 	private void init() {
 
+
 		playerName = JOptionPane.showInputDialog("Molimo unesite Vašu šifru:");
 		
-				
 			if (playerName == null || playerName.trim().isEmpty()) {
 				playerName = "Unknown";
 			}
@@ -160,9 +165,9 @@ public class Tetris extends JPanel {
 		added = false;
 		endGame.setVisible(false);
 		gameOver = false;
-		phase = 1;
-		timeDec = 200;
-		sleepTime = 2250;
+		timeDec = 50;
+		// sleepTime = 1000;
+		consecutiveObjects = 0;
 		storedPiece = -1;
 		score = 0;
 		
@@ -185,6 +190,7 @@ public class Tetris extends JPanel {
 	
 	// Put a new, random piece into the dropping position
 	public void newPiece() {
+		consecutiveObjects++;
 		pieceOrigin = new Point(5, 1);
 		
 		rotation = 0;
@@ -209,6 +215,7 @@ public class Tetris extends JPanel {
 	
 	//Put a predetermined piece into the starting position
 	public void newPiece(int piece) {
+		consecutiveObjects++;
 		pieceOrigin = new Point(5, 1);
 		
 		rotation = 0;
@@ -324,22 +331,31 @@ public class Tetris extends JPanel {
 			}
 		}
 				
-		switch (numClears) 
-		{
-		case 1:
-			score += 100;
-			break;
-		case 2:
-			score += 300;
-			break;
-		case 3:
-			score += 500;
-			break;
-		case 4:
-			score += 800;
-			break;
-		}
-		
+		linesClearedWithin30 += numClears;
+
+		switch (numClears) {
+        case 1:
+            score += 100;
+            break;
+        case 2:
+            score += 300;
+            break;
+        case 3:
+            score += 500;
+            break;
+        case 4:
+            score += 800;
+            break;
+    }
+
+
+    if(consecutiveObjects >= 30 || linesClearedWithin30 >= 5) {
+        adjustDifficultyForFlow();
+        consecutiveObjects = 0;
+        linesClearedWithin30 = 0;
+    }
+
+
 		
 	}
 	
@@ -387,6 +403,18 @@ public class Tetris extends JPanel {
 		return returnString;
 		
 	}
+
+
+	private void adjustDifficultyForFlow() { 
+    	if (linesClearedWithin30 >= 5) {
+        	// Allow sleepTime to decrease but not below 10 ms
+        	sleepTime = Math.max(100, sleepTime - timeDec); 
+    		} else if (linesClearedWithin30 <= 3) {
+        	// Allow sleepTime to increase but not exceed 1000 ms
+        	sleepTime = Math.min(1000, sleepTime + timeDec);
+    		}
+	}
+
 	
 	@Override 
 	public void paintComponent(Graphics g)
@@ -405,7 +433,12 @@ public class Tetris extends JPanel {
 		
 		// Display the score
 		g.setColor(Color.WHITE);
-		g.drawString("Score: " + score, 20, 35);
+		g.drawString("Score: " + score, 20, 55);
+
+	//		g.drawString("Current sleep time: " + sleepTime, 60, 55);
+
+		
+
 		
 		//Display the currently stored piece
 		g.setColor(Color.WHITE);
@@ -419,7 +452,7 @@ public class Tetris extends JPanel {
 	
 	public static void main(String[] args) throws IOException 
 	{
-
+				
 		//JFrame Initialization
 		f = new JFrame("Tetris");
 		
@@ -457,8 +490,9 @@ public class Tetris extends JPanel {
 		
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+
 		f.setSize(12*26+15, 26*24+38 + 60);
-		f.setLocationRelativeTo(null);			
+		f.setLocationRelativeTo(null);						
 		f.setVisible(true);
 		
 		final Tetris game = new Tetris();
@@ -469,14 +503,11 @@ public class Tetris extends JPanel {
 		newGame.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Save the current score before restarting the game.
 				try (FileWriter scoresFileWriter = new FileWriter("scores.txt", true)) {
 					scoresFileWriter.write(playerName + ": " + game.score + "\n");
 				} catch (IOException ioException) {
 					ioException.printStackTrace();
 				}
-				
-				// Now restart the game.
 				game.restart();
 				endGame.setVisible(false); // Hide the endGame frame after restarting
 			}
@@ -514,10 +545,10 @@ public class Tetris extends JPanel {
 						break;
 					
 					//Note: Drop down has been switched to the down arrow key.
-					// case KeyEvent.VK_DOWN:
-					// 	game.dropDown();
-						// game.score += 1;
-					// 	break;
+					case KeyEvent.VK_DOWN:
+						game.dropDown();
+						game.score += 1;
+						break;
 					case KeyEvent.VK_LEFT:
 						game.move(-1);
 						break;
@@ -529,9 +560,9 @@ public class Tetris extends JPanel {
 					* Space bar is used for a Hard Drop - Piece instantly moves to the bottom of
 					* the screen. This awards 2 points for every row dropped.
 					*/
-					// case KeyEvent.VK_SPACE:
-					// 	game.dropToBottom();
-					// 	break;
+					case KeyEvent.VK_SPACE:
+						game.dropToBottom();
+						break;
 					
 					/*
 					* Stored Piece Code 
@@ -596,7 +627,6 @@ public class Tetris extends JPanel {
 				game.dropDown();
 			}
 			
-
 			endGameString = "<html><pre>";
 			
 			endGameString = endGameString + "</pre></html>";
@@ -604,7 +634,7 @@ public class Tetris extends JPanel {
 			endGameText.setText(endGameString);
 			
 			endGame.setVisible(true);
-
+			
 			while (game.gameOver) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(100); // Sleep for a short duration to prevent busy waiting.
@@ -619,8 +649,6 @@ public class Tetris extends JPanel {
 		//Exit game code
 		endGame.dispose();
 		f.dispose();
-		inputFile.close();
-		
 	}
 	
 	

@@ -132,7 +132,7 @@ public class Tetris extends JPanel {
 	// Creates a border around the well and initializes the dropping piece
 	private void init() {
 
-		playerName = JOptionPane.showInputDialog("Molimo unesite vaše ime:");
+		playerName = JOptionPane.showInputDialog("Molimo unesite vašu šifru:");
 		
 			if (playerName == null || playerName.trim().isEmpty()) {
 				playerName = "Unknown";
