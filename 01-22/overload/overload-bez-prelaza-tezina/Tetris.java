@@ -170,7 +170,6 @@ public class Tetris extends JPanel {
     timeDec = 15;         // Reset acceleration
     sleepTime = 50;       // Reset starting falling speed
     
-    consecutiveObjects = 0;
     storedPiece = -1;
     score = 0;
     
@@ -405,17 +404,6 @@ public class Tetris extends JPanel {
 	}
 
 
-	private void adjustDifficultyForFlow() { 
-		if (linesClearedWithin30 >= 5) {
-			if(sleepTime >= 0){
-				if(sleepTime <= (2 * timeDec)) {
-				timeDec /= 2;
-			}
-			sleepTime -= timeDec;
-			}
-			
-		}
-	}	
 	
 	@Override 
 	public void paintComponent(Graphics g)

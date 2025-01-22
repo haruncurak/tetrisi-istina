@@ -170,7 +170,6 @@ public class Tetris extends JPanel {
     timeDec = 15;         // Reset acceleration
     sleepTime = 50;       // Reset starting falling speed
     
-    consecutiveObjects = 0;
     storedPiece = -1;
     score = 0;
     
