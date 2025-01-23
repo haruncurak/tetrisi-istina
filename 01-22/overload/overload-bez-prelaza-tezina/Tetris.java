@@ -415,6 +415,8 @@ public class Tetris extends JPanel {
 		}
 	}	
 
+	// ovdje nema promjene za pogoršanje
+
 
 
 	
