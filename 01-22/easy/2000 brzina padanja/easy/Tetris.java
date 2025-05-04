@@ -427,6 +427,8 @@ public class Tetris extends JPanel {
 		endGame.setSize(12*26+15, 300);
 
 		endGame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		endGame.setUndecorated(true);      // Disable all window controls (close, minimize, maximize)
+		endGame.setResizable(false);       // Prevent manual resizing even without decorations
 		
 		newGame = new JButton();
 		newGame.setText("Play Again");

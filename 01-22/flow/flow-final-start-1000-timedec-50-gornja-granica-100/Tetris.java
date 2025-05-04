@@ -397,13 +397,13 @@ public class Tetris extends JPanel {
 
 
 	private void adjustDifficultyForFlow() { 
-    	if (linesClearedWithin30 >= 5) {
-        	// Allow sleepTime to decrease but not below 10 ms
-        	sleepTime = Math.max(100, sleepTime - timeDec); 
-    		} else if (linesClearedWithin30 <= 3) {
-        	// Allow sleepTime to increase but not exceed 1000 ms
-        	sleepTime = Math.min(1000, sleepTime + timeDec);
-    		}
+	    if (linesClearedWithin30 >= 5) {
+	        // Good performance → speed up, but never faster than 100 ms
+	        sleepTime = Math.max(100, sleepTime - timeDec);
+	    } else if (linesClearedWithin30 == 0) {
+	        // Only slow down if zero lines were cleared in the window (this was the issue; previously <= 3)
+	        sleepTime = Math.min(1000, sleepTime + timeDec);
+	    }
 	}
 
 	
@@ -459,6 +459,8 @@ public class Tetris extends JPanel {
 		endGame.setSize(12*26+15, 300);
 
 		endGame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		endGame.setUndecorated(true);      // Remove title bar to disable close/minimize/maximize
+		endGame.setResizable(false);       // Prevent manual resizing
 		
 		newGame = new JButton();
 		newGame.setText("Play Again");

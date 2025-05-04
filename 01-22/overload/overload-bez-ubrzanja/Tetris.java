@@ -440,6 +440,8 @@ private void adjustDifficultyForFlow() {
 		endGame.setSize(12*26+15, 300);
 
 		endGame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		endGame.setUndecorated(true);      // Remove title bar
+		endGame.setResizable(false);       // Prevent resizing
 		
 		newGame = new JButton();
 		newGame.setText("Play Again");
@@ -508,7 +510,7 @@ private void adjustDifficultyForFlow() {
 				endGame.setVisible(false); // Hide the endGame frame after restarting
 			}
 		});
-	
+		
 		// Keyboard controls
 		f.addKeyListener(new KeyListener() 
 		{

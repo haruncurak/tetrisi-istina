@@ -165,6 +165,9 @@ public class Tetris extends JPanel {
     storedPiece = -1;
     score = 0;
     
+    // Reset piece counter but keep the line counter to allow carry-over logic
+    consecutiveObjects = 0;
+    
     // Clear the game board
     for (int j = 22; j > 0; j--) 
     {
