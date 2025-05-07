@@ -401,8 +401,8 @@ public class Tetris extends JPanel {
         	// Allow sleepTime to decrease but not below 10 ms
         	sleepTime = Math.max(100, sleepTime - timeDec); 
     		} else if (linesClearedWithin30 <= 3) {
-        	// Allow sleepTime to increase but not exceed 1000 ms
-        	sleepTime = Math.min(1000, sleepTime + timeDec);
+        	// Allow sleepTime to increase but not exceed 2000 ms
+        	sleepTime = Math.min(2000, sleepTime + timeDec);
     		}
 	}
 
